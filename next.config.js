@@ -2,6 +2,7 @@
 const webpack = require('webpack');
 const nextConfig = {
   reactStrictMode: false,
+  images: { unoptimized: true },
   output: 'export',
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
     config.plugins.push(

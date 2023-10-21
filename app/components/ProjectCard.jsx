@@ -6,7 +6,7 @@ const ProjectCard = ({ imgUrl, title, description, gitUrl, previewUrl, tag }) =>
   return (
     <div className="hover:scale-110 transition-all duration-500">
       <div
-        className=" md:h-72 rounded-t-xl relative group"
+        className=" md:h-72 h-52 rounded-t-xl relative group"
         style={{ background: `url(${imgUrl})`, backgroundSize: "cover" }}
       >
         {/* <img src={imgUrl}></img> */}
