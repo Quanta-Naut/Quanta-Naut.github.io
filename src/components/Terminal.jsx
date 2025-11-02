@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import anime from 'animejs'
 import './Terminal.css'
 import { Moon, Sun } from 'lucide-react'
+import LatestProjectBanner from './LatestProjectBanner'
 
 const Terminal = () => {
   const [lines, setLines] = useState([])
@@ -280,6 +281,8 @@ const Terminal = () => {
           </div>
             <p className="welcome-text">Welcome to <span className="highlight">Tarun's</span> terminal!</p>
             <p className="welcome-text">Initializing...</p>
+            <br />
+            <LatestProjectBanner />
             <br />
           </div>
 
