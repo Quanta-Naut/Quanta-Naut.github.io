@@ -1,19 +1,36 @@
+import { useMemo } from 'react'
 import './LatestProjectBanner.css'
 
 const LatestProjectBanner = () => {
+  // Memoize particle configurations to prevent recalculation on every render
+  const particles = useMemo(() => {
+    return [...Array(12)].map((_, i) => ({
+      key: i,
+      delay: `${i * 0.3}s`,
+      duration: `${3 + (i % 3)}s`,
+      x: `${Math.random() * 100}%`,
+      y: `${Math.random() * 100}%`,
+      size: `${2 + Math.random() * 3}px`
+    }))
+  }, []) // Empty dependency array means this only runs once
+
   return (
     <div className="featured-project-banner">
       <div className="banner-content">
         {/* Particle background */}
         <div className="particles-container">
-          {[...Array(15)].map((_, i) => (
-            <div key={i} className="particle" style={{
-              '--delay': `${i * 0.3}s`,
-              '--duration': `${3 + (i % 3)}s`,
-              '--x': `${Math.random() * 100}%`,
-              '--y': `${Math.random() * 100}%`,
-              '--size': `${2 + Math.random() * 3}px`
-            }}></div>
+          {particles.map((particle) => (
+            <div
+              key={particle.key}
+              className="particle"
+              style={{
+                '--delay': particle.delay,
+                '--duration': particle.duration,
+                '--x': particle.x,
+                '--y': particle.y,
+                '--size': particle.size
+              }}
+            ></div>
           ))}
         </div>
         <span className="banner-label">HOTTEST PROJECT:</span>

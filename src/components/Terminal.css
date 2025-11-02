@@ -191,7 +191,7 @@
 }
 
 .terminal-welcome {
-  margin-bottom: 10px;
+  /* margin-bottom: 10px; */
 }
 
 .ascii-art {
@@ -232,7 +232,7 @@
 .prompt-line {
   display: flex;
   align-items: center;
-  margin: 15px 0 10px 0;
+  margin: 4px 0 4px 0;
   color: #1A1A1A;
   transition: color 0.3s ease;
 }
