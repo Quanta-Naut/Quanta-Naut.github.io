@@ -232,7 +232,7 @@
 .prompt-line {
   display: flex;
   align-items: center;
-  margin: 4px 0 4px 0;
+  /* margin: 4px 0 4px 0; */
   color: #1A1A1A;
   transition: color 0.3s ease;
 }
