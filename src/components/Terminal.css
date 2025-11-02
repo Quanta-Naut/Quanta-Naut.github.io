@@ -149,7 +149,7 @@
   padding: 20px;
   height: 70vh;
   overflow-y: auto;
-  color: #2D2D2D;
+  color: #1A1A1A;
   font-size: 14px;
   line-height: 1.6;
   background: #FAF7F5;
@@ -209,7 +209,7 @@
 }
 
 .welcome-text {
-  color: #6B5D52;
+  color: #4A4A4A;
   margin: 5px 0;
   font-size: 14px;
   transition: color 0.3s ease;
@@ -233,7 +233,7 @@
   display: flex;
   align-items: center;
   margin: 15px 0 10px 0;
-  color: #2D2D2D;
+  color: #1A1A1A;
   transition: color 0.3s ease;
 }
 
@@ -253,7 +253,7 @@
 }
 
 .command-text {
-  color: #2D2D2D;
+  color: #1A1A1A;
   font-weight: 600;
   transition: color 0.3s ease;
 }
@@ -284,12 +284,35 @@
 }
 
 .output-line {
-  color: #4A4A4A;
+  color: #2A2A2A;
   padding-left: 20px;
   margin: 2px 0;
   opacity: 0;
-  white-space: pre-wrap;
+  white-space: pre;
   transition: color 0.3s ease;
+}
+
+.output-container {
+  overflow-x: auto;
+  width: 100%;
+  background: transparent;
+  padding: 5px 0;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+/* Hide scrollbar for WebKit browsers */
+.output-container::-webkit-scrollbar {
+  display: none;
+}
+
+.command-group {
+  margin-bottom: 10px;
+}
+
+/* Mobile line break - hidden by default */
+.mobile-break {
+  display: none;
 }
 
 .terminal-wrapper.dark .output-line {
@@ -357,16 +380,32 @@
   .terminal-wrapper {
     padding: 8px;
     align-items: stretch;
-    height: 100%;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
+    max-height: 100vh;
+    max-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
   }
 
   .terminal-window {
     max-width: 100%;
     margin: 0;
     border-radius: 8px;
-    height: 100%;
+    flex: 1;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+    max-height: calc(100% - 16px);
   }
 
   .terminal-header {
@@ -376,11 +415,14 @@
 
   .terminal-body {
     padding: 12px;
+    padding-bottom: 20px;
     font-size: 14px;
-    height: 0;
     flex: 1;
     overflow-y: auto;
+    overflow-x: hidden;
     line-height: 1.6;
+    min-height: 0;
+    -webkit-overflow-scrolling: touch;
   }
 
   .ascii-art {
@@ -429,7 +471,7 @@
   .output-line {
     padding-left: 15px;
     font-size: 14px;
-    word-wrap: break-word;
+    white-space: pre;
   }
 
   .terminal-link {
@@ -439,6 +481,11 @@
 
   .highlight {
     font-size: 14px;
+  }
+
+  /* Show mobile line break on tablets and smaller */
+  .mobile-break {
+    display: block;
   }
 }
 
@@ -464,7 +511,8 @@
 
   .ascii-art {
     font-size: 5px;
-    line-height: 1.0;
+    line-height: 1.1;
+    
   }
 
   .terminal-title {
@@ -498,6 +546,7 @@
   .output-line {
     padding-left: 12px;
     font-size: 13px;
+    white-space: pre;
   }
 
   .highlight {

@@ -37,6 +37,12 @@ const Terminal = () => {
     return () => mediaQuery.removeEventListener('change', handleChange)
   }, [])
 
+  // Update html background when theme changes
+  useEffect(() => {
+    document.documentElement.style.backgroundColor = theme === 'dark' ? '#1a1a1a' : '#F4EDE4'
+    document.body.style.backgroundColor = theme === 'dark' ? '#1a1a1a' : '#F4EDE4'
+  }, [theme])
+
   // Toggle theme
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light'
@@ -49,7 +55,7 @@ const Terminal = () => {
       command: 'whoami',
       output: [
         'Tarun Kumar S',
-        'Graphics Programmer | AI/ML Engineer | Rocketry Enthusiast',
+        'Graphics Programmer | AI/ML Engineer | <br class="mobile-break">Rocketry Enthusiast',
         ''
       ]
     },
@@ -61,14 +67,15 @@ const Terminal = () => {
         'I like building things that move,',
         'whether it’s pixels, data, or engines.',
         '',
-        'Some run on code, some on fuel. All on curiosity,',
+        'Some run on code, some on fuel,',
+        'All on curiosity,',
         ''
       ]
     },
     {
   command: 'ls -la skills/',
   output: [
-    'drwxr-xr-x  5  quantanaut  staff   160  Nov  2  2024  .',
+    'drwxr-xr-x  5  quantanaut  staff   160  Oct  1  2025  .',
     '',
     'LANG/        Rust • TypeScript • Python • C++',
     'WEB/         Next.js • Full Stack • Tauri • wgpu-rs',
@@ -124,8 +131,24 @@ const Terminal = () => {
   }, [currentLineIndex])
 
   useEffect(() => {
-    if (endRef.current) {
-      endRef.current.scrollIntoView({ behavior: 'smooth' })
+    // Scroll to bottom when typing starts
+    if (endRef.current && showPrompt) {
+      setTimeout(() => {
+        if (endRef.current) {
+          endRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
+        }
+      }, 50)
+    }
+  }, [showPrompt])
+
+  useEffect(() => {
+    // Scroll to bottom when new lines are added
+    if (endRef.current && lines.length > 0) {
+      setTimeout(() => {
+        if (endRef.current) {
+          endRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
+        }
+      }, 150)
     }
   }, [lines])
 
@@ -134,7 +157,8 @@ const Terminal = () => {
     const urlRegex = /(https?:\/\/[^\s]+)/g
     const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/g
     const nameRegex = /(Tarun Kumar S)/g
-    const combinedRegex = /(https?:\/\/[^\s]+|[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+|Tarun Kumar S)/g
+    const breakRegex = /(<br class="mobile-break">)/g
+    const combinedRegex = /(https?:\/\/[^\s]+|[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+|Tarun Kumar S|<br class="mobile-break">)/g
 
     const parts = text.split(combinedRegex)
 
@@ -170,6 +194,8 @@ const Terminal = () => {
             {part}
           </span>
         )
+      } else if (part.match(breakRegex)) {
+        return <br key={index} className="mobile-break" />
       }
       return part
     })
@@ -180,23 +206,11 @@ const Terminal = () => {
     setShowPrompt(true)
     setTypingCommand('')
 
-    // Scroll to bottom when typing starts
-    setTimeout(() => {
-      if (endRef.current) {
-        endRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
-      }
-    }, 100)
-
     // Type command character by character
     const commandText = cmd.command
     for (let i = 0; i <= commandText.length; i++) {
       setTypingCommand(commandText.slice(0, i))
       await new Promise(resolve => setTimeout(resolve, 50))
-
-      // Keep scrolling to bottom while typing
-      if (endRef.current) {
-        endRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
-      }
     }
 
     // Wait a bit after typing completes
@@ -254,6 +268,7 @@ const Terminal = () => {
         </div>
         <div className="terminal-body" ref={terminalRef}>
           <div className="terminal-welcome">
+            <div className="ascii-container">
             <pre className="ascii-art">{`
   ██████╗ ██╗   ██╗ █████╗ ███╗   ██╗████████╗ █████╗     ███╗   ██╗ █████╗ ██╗   ██╗████████╗
  ██╔═══██╗██║   ██║██╔══██╗████╗  ██║╚══██╔══╝██╔══██╗    ████╗  ██║██╔══██╗██║   ██║╚══██╔══╝
@@ -262,24 +277,48 @@ const Terminal = () => {
  ╚██████╔╝╚██████╔╝██║  ██║██║ ╚████║   ██║   ██║  ██║    ██║ ╚████║██║  ██║╚██████╔╝   ██║
   ╚══▀▀═╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═╝   ╚═╝  ╚═╝    ╚═╝  ╚═══╝╚═╝  ╚═╝ ╚═════╝    ╚═╝
             `}</pre>
+          </div>
             <p className="welcome-text">Welcome to <span className="highlight">Tarun's</span> terminal!</p>
             <p className="welcome-text">Initializing...</p>
             <br />
           </div>
 
-          {lines.map((line, index) => (
-            <div key={line.id}>
-              {line.type === 'prompt' && (
+          {(() => {
+            const groupedLines = []
+            let currentGroup = null
+            
+            lines.forEach((line) => {
+              if (line.type === 'prompt') {
+                // Start a new group for each command
+                currentGroup = {
+                  prompt: line,
+                  outputs: []
+                }
+                groupedLines.push(currentGroup)
+              } else if (line.type === 'output' && currentGroup) {
+                // Add output to current group
+                currentGroup.outputs.push(line)
+              }
+            })
+            
+            return groupedLines.map((group, groupIndex) => (
+              <div key={group.prompt.id} className="command-group">
                 <div className="prompt-line">
                   <span className="prompt-symbol">$</span>
-                  <span className="command-text">{line.command}</span>
+                  <span className="command-text">{group.prompt.command}</span>
                 </div>
-              )}
-              {line.type === 'output' && (
-                <div className="output-line">{parseTextWithLinks(line.text)}</div>
-              )}
-            </div>
-          ))}
+                {group.outputs.length > 0 && (
+                  <div className="output-container">
+                    {group.outputs.map((output) => (
+                      <div key={output.id} className="output-line">
+                        {parseTextWithLinks(output.text)}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))
+          })()}
 
           {showPrompt && (
             <div className="prompt-line">
