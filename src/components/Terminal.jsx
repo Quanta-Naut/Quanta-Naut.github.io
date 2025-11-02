@@ -13,12 +13,28 @@ const Terminal = () => {
   const terminalRef = useRef(null)
   const endRef = useRef(null)
 
-  // Load theme from localStorage on mount
+  // Load theme from localStorage or system preference on mount
   useEffect(() => {
     const savedTheme = localStorage.getItem('terminal-theme')
     if (savedTheme) {
       setTheme(savedTheme)
+    } else {
+      // Detect system theme preference
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      setTheme(prefersDark ? 'dark' : 'light')
     }
+
+    // Listen for system theme changes
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    const handleChange = (e) => {
+      // Only update if user hasn't set a preference
+      if (!localStorage.getItem('terminal-theme')) {
+        setTheme(e.matches ? 'dark' : 'light')
+      }
+    }
+
+    mediaQuery.addEventListener('change', handleChange)
+    return () => mediaQuery.removeEventListener('change', handleChange)
   }, [])
 
   // Toggle theme
